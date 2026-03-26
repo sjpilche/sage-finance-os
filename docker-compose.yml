@@ -21,7 +21,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.sage
+      dockerfile: Dockerfile
     container_name: sage-finance-backend
     ports:
       - "8090:8090"
