@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import type { VarianceDetail } from "@/lib/types/analysis";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, chartTooltipStyle, chartColors } from "@/lib/utils";
 
 interface VarianceChartProps {
   details: VarianceDetail[];
@@ -33,30 +33,25 @@ export function VarianceChart({ details, maxItems = 15 }: VarianceChartProps) {
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
         <XAxis
           type="number"
-          tick={{ fill: "#64748b", fontSize: 11 }}
+          tick={{ fill: "#475569", fontSize: 11 }}
           tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
         />
         <YAxis
           type="category"
           dataKey="account_name"
-          tick={{ fill: "#64748b", fontSize: 11 }}
+          tick={{ fill: "#475569", fontSize: 11 }}
           width={110}
         />
         <Tooltip
           formatter={(value: number) => [formatCurrency(value), "Variance"]}
-          contentStyle={{
-            background: "#fff",
-            border: "1px solid #e2e8f0",
-            borderRadius: "6px",
-            fontSize: "12px",
-          }}
+          contentStyle={chartTooltipStyle}
         />
         <ReferenceLine x={0} stroke="#94a3b8" />
-        <Bar dataKey="variance" radius={[0, 4, 4, 0]}>
+        <Bar dataKey="variance" radius={[0, 4, 4, 0]} animationDuration={600}>
           {flagged.map((d, i) => (
             <Cell
               key={i}
-              fill={d.direction === "favorable" ? "#16a34a" : "#dc2626"}
+              fill={d.direction === "favorable" ? chartColors.green : chartColors.red}
             />
           ))}
         </Bar>

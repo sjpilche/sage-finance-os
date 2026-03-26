@@ -1,6 +1,7 @@
 "use client";
 
 import { useApi } from "@/lib/api/client";
+import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { Badge } from "@/components/ui/Badge";
@@ -57,22 +58,22 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <Card title="Quick Actions">
           <div className="space-y-2">
-            <Link href="/financials/pl" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors">
+            <Link href="/financials/pl" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 text-sm font-medium text-slate-700 transition-all duration-150">
               <TrendingUp size={16} className="text-[var(--accent)]" />
               Income Statement
               <ArrowRight size={14} className="ml-auto text-slate-400" />
             </Link>
-            <Link href="/analysis/aging" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors">
+            <Link href="/analysis/aging" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 text-sm font-medium text-slate-700 transition-all duration-150">
               <Timer size={16} className="text-[var(--accent)]" />
               AR/AP Aging
               <ArrowRight size={14} className="ml-auto text-slate-400" />
             </Link>
-            <Link href="/quality" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors">
+            <Link href="/quality" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 text-sm font-medium text-slate-700 transition-all duration-150">
               <ShieldCheck size={16} className="text-[var(--accent)]" />
               Quality Scorecards
               <ArrowRight size={14} className="ml-auto text-slate-400" />
             </Link>
-            <Link href="/sync" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm text-slate-700 transition-colors">
+            <Link href="/sync" className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-100 text-sm font-medium text-slate-700 transition-all duration-150">
               <RefreshCw size={16} className="text-[var(--accent)]" />
               Sync Runs
               <ArrowRight size={14} className="ml-auto text-slate-400" />
@@ -128,27 +129,27 @@ export default function Dashboard() {
 
       {/* Data Freshness */}
       <h2 className="text-lg font-semibold text-slate-800 mb-3">Data Freshness</h2>
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50">
+          <thead className="bg-slate-100/70 border-b border-slate-200">
             <tr>
-              <th className="text-left px-4 py-2 font-medium text-slate-600">Object</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-600">Last Sync</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-600">Hours Ago</th>
-              <th className="text-right px-4 py-2 font-medium text-slate-600">Row Count</th>
-              <th className="text-left px-4 py-2 font-medium text-slate-600">Status</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Object</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Last Sync</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Hours Ago</th>
+              <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Row Count</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Status</th>
             </tr>
           </thead>
           <tbody>
-            {(freshness?.data?.objects || []).map((obj) => (
-              <tr key={obj.object_name} className="border-t border-slate-100">
-                <td className="px-4 py-2 font-mono">{obj.object_name}</td>
-                <td className="px-4 py-2 text-slate-600">
+            {(freshness?.data?.objects || []).map((obj, idx) => (
+              <tr key={obj.object_name} className={cn("border-t border-slate-100", idx % 2 === 1 && "bg-slate-50/50")}>
+                <td className="px-4 py-2.5 font-mono">{obj.object_name}</td>
+                <td className="px-4 py-2.5 text-slate-600">
                   {obj.last_sync_at ? formatDateTime(obj.last_sync_at) : "Never"}
                 </td>
-                <td className="px-4 py-2">{obj.hours_since_sync?.toFixed(1) ?? "\u2014"}</td>
-                <td className="px-4 py-2 text-right font-mono">{formatNumber(obj.row_count)}</td>
-                <td className="px-4 py-2">
+                <td className="px-4 py-2.5">{obj.hours_since_sync?.toFixed(1) ?? "\u2014"}</td>
+                <td className="px-4 py-2.5 text-right font-mono">{formatNumber(obj.row_count)}</td>
+                <td className="px-4 py-2.5">
                   <Badge variant={obj.is_stale ? "danger" : "success"}>
                     {obj.is_stale ? "Stale" : "Fresh"}
                   </Badge>

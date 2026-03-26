@@ -75,19 +75,24 @@ const sections: NavSection[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="w-64 bg-slate-900 text-white p-4 flex flex-col gap-0.5 shrink-0">
-      <div className="text-lg font-bold text-teal-400 mb-6 px-2">
+    <nav className="w-64 bg-slate-900 text-white p-4 flex flex-col gap-0.5 shrink-0 overflow-y-auto">
+      {/* Logo */}
+      <div className="text-lg font-bold text-teal-400 px-2 pb-6 mb-2 border-b border-slate-800">
         Sage Finance OS
       </div>
 
       {sections.map((section, i) => (
         <div key={i}>
           {section.title && (
-            <div className="text-xs text-slate-500 uppercase mt-4 mb-1 px-2">
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-5 mb-1.5 px-2">
               {section.title}
             </div>
           )}
@@ -101,17 +106,22 @@ export function Sidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={onNavigate}
                 className={cn(
-                  "flex items-center gap-2.5 px-2 py-1.5 rounded text-sm transition-colors",
+                  "relative flex items-center gap-2.5 px-2 py-2 rounded-md text-sm transition-all duration-150",
+                  "focus:outline-none focus:ring-2 focus:ring-teal-400/30 focus:ring-inset",
                   isActive
                     ? "bg-slate-800 text-white"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    : "text-slate-400 hover:bg-slate-800/70 hover:text-slate-200"
                 )}
               >
-                <span className={cn("opacity-60", isActive && "opacity-100")}>
+                {isActive && (
+                  <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-teal-400" />
+                )}
+                <span className={cn("transition-opacity duration-150", isActive ? "opacity-100" : "opacity-60")}>
                   {item.icon}
                 </span>
-                {item.label}
+                <span className={cn(isActive && "font-medium")}>{item.label}</span>
               </Link>
             );
           })}

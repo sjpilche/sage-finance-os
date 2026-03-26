@@ -51,19 +51,19 @@ export default function GLPage() {
           placeholder="Account number..."
           value={account}
           onChange={(e) => { setAccount(e.target.value); reset(); }}
-          className="px-3 py-1.5 rounded border border-slate-200 text-sm w-40"
+          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150 w-40"
         />
         <input
           type="date"
           value={dateFrom}
           onChange={(e) => { setDateFrom(e.target.value); reset(); }}
-          className="px-3 py-1.5 rounded border border-slate-200 text-sm"
+          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150"
         />
         <input
           type="date"
           value={dateTo}
           onChange={(e) => { setDateTo(e.target.value); reset(); }}
-          className="px-3 py-1.5 rounded border border-slate-200 text-sm"
+          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150"
         />
       </div>
 

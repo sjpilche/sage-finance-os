@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { chartTooltipStyle, chartColors } from "@/lib/utils";
 import type { Scorecard } from "@/lib/types/quality";
 
 interface QualityRadarChartProps {
@@ -37,7 +38,7 @@ export function QualityRadarChart({ scorecard }: QualityRadarChartProps) {
         <PolarGrid stroke="#e2e8f0" />
         <PolarAngleAxis
           dataKey="dimension"
-          tick={{ fill: "#64748b", fontSize: 12 }}
+          tick={{ fill: "#475569", fontSize: 12 }}
         />
         <PolarRadiusAxis
           angle={90}
@@ -46,19 +47,15 @@ export function QualityRadarChart({ scorecard }: QualityRadarChartProps) {
         />
         <Tooltip
           formatter={(value: number) => [`${value.toFixed(1)}%`, "Score"]}
-          contentStyle={{
-            background: "#fff",
-            border: "1px solid #e2e8f0",
-            borderRadius: "6px",
-            fontSize: "12px",
-          }}
+          contentStyle={chartTooltipStyle}
         />
         <Radar
           dataKey="value"
-          stroke="#0f7173"
-          fill="#0f7173"
+          stroke={chartColors.teal}
+          fill={chartColors.teal}
           fillOpacity={0.2}
           strokeWidth={2}
+          animationDuration={600}
         />
       </RechartsRadarChart>
     </ResponsiveContainer>

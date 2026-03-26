@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { CSSProperties } from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,3 +45,23 @@ export function formatDateTime(value: string | null | undefined): string {
     minute: "2-digit",
   });
 }
+
+/** Shared chart tooltip style for Recharts */
+export const chartTooltipStyle: CSSProperties = {
+  background: "#fff",
+  border: "1px solid #e2e8f0",
+  borderRadius: "8px",
+  fontSize: "12px",
+  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.07)",
+  padding: "8px 12px",
+};
+
+/** Shared chart color palette */
+export const chartColors = {
+  teal: "#0f7173",
+  red: "#dc2626",
+  green: "#16a34a",
+  amber: "#eab308",
+  orange: "#f97316",
+  blue: "#3b82f6",
+};

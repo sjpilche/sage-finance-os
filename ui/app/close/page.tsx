@@ -104,9 +104,9 @@ export default function PeriodClosePage() {
               </button>
             </div>
             {closeError && <p className="text-sm text-red-600 mt-2">{closeError}</p>}
-            <div className="w-full bg-slate-200 rounded-full h-2.5">
+            <div className="w-full bg-slate-200 rounded-full h-3 shadow-inner">
               <div
-                className="h-2.5 rounded-full transition-all"
+                className="h-3 rounded-full transition-all duration-500"
                 style={{
                   width: `${checklist.readiness_pct}%`,
                   backgroundColor: checklist.readiness_pct === 100 ? "var(--success)" : checklist.readiness_pct >= 70 ? "var(--warning)" : "var(--danger)",

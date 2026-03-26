@@ -17,25 +17,28 @@ export function Pagination({ offset, limit, total, onNext, onPrev }: PaginationP
   const to = Math.min(offset + limit, total);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-lg mt-2">
+    <div className="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-lg shadow-sm mt-2">
       <div className="text-sm text-slate-500">
-        Showing {from}–{to} of {total.toLocaleString()}
+        Showing <span className="font-medium text-slate-700">{from}&ndash;{to}</span> of{" "}
+        <span className="font-medium text-slate-700">{total.toLocaleString()}</span>
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={onPrev}
           disabled={offset === 0}
-          className="p-1.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="p-2 rounded-lg border border-slate-200 text-slate-600 transition-all duration-150 hover:bg-slate-100 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 focus:ring-offset-1 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-slate-200"
+          aria-label="Previous page"
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="text-sm text-slate-600 min-w-[80px] text-center">
+        <span className="text-sm font-medium text-slate-700 min-w-[80px] text-center">
           Page {page} of {totalPages}
         </span>
         <button
           onClick={onNext}
           disabled={offset + limit >= total}
-          className="p-1.5 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="p-2 rounded-lg border border-slate-200 text-slate-600 transition-all duration-150 hover:bg-slate-100 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 focus:ring-offset-1 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-slate-200"
+          aria-label="Next page"
         >
           <ChevronRight size={16} />
         </button>

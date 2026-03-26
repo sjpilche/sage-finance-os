@@ -40,21 +40,21 @@ export default function BalanceSheetPage() {
       {bs && (
         <div className="space-y-6">
           {/* Accounting Equation */}
-          <div className="bg-white rounded-lg border border-slate-200 p-6">
-            <div className="flex items-center justify-center gap-4 text-lg">
-              <div className="text-center">
-                <div className="text-sm text-slate-500 mb-1">Assets</div>
-                <div className="font-bold text-slate-900">{formatCurrency(bs.total_assets)}</div>
+          <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+              <div className="text-center bg-teal-50 rounded-lg px-6 py-4 min-w-[160px]">
+                <div className="text-xs font-semibold uppercase tracking-wide text-teal-700 mb-2">Assets</div>
+                <div className="text-2xl font-bold text-slate-900 tabular-nums">{formatCurrency(bs.total_assets)}</div>
               </div>
-              <span className="text-slate-400 text-2xl">=</span>
-              <div className="text-center">
-                <div className="text-sm text-slate-500 mb-1">Liabilities</div>
-                <div className="font-bold text-slate-900">{formatCurrency(bs.total_liabilities)}</div>
+              <span className="text-3xl text-slate-300 font-light">=</span>
+              <div className="text-center bg-red-50 rounded-lg px-6 py-4 min-w-[160px]">
+                <div className="text-xs font-semibold uppercase tracking-wide text-red-700 mb-2">Liabilities</div>
+                <div className="text-2xl font-bold text-slate-900 tabular-nums">{formatCurrency(bs.total_liabilities)}</div>
               </div>
-              <span className="text-slate-400 text-2xl">+</span>
-              <div className="text-center">
-                <div className="text-sm text-slate-500 mb-1">Equity</div>
-                <div className="font-bold text-slate-900">{formatCurrency(bs.total_equity)}</div>
+              <span className="text-3xl text-slate-300 font-light">+</span>
+              <div className="text-center bg-blue-50 rounded-lg px-6 py-4 min-w-[160px]">
+                <div className="text-xs font-semibold uppercase tracking-wide text-blue-700 mb-2">Equity</div>
+                <div className="text-2xl font-bold text-slate-900 tabular-nums">{formatCurrency(bs.total_equity)}</div>
               </div>
             </div>
           </div>

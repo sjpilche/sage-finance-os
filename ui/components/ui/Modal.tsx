@@ -29,15 +29,18 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
     <dialog
       ref={dialogRef}
       onClose={onClose}
-      className="backdrop:bg-black/40 rounded-lg shadow-xl border border-slate-200 p-0 max-w-lg w-full"
+      className="backdrop:bg-black/50 backdrop:backdrop-blur-sm rounded-xl shadow-2xl border border-slate-200 p-0 max-w-lg w-full animate-[modal-enter_200ms_ease-out]"
     >
-      <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
-        <h2 className="font-semibold text-slate-900">{title}</h2>
-        <button onClick={onClose} className="p-1 rounded hover:bg-slate-100">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 rounded-t-xl">
+        <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+        <button
+          onClick={onClose}
+          className="p-1.5 rounded-md hover:bg-slate-200 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25"
+        >
           <X size={18} className="text-slate-500" />
         </button>
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-6">{children}</div>
     </dialog>
   );
 }

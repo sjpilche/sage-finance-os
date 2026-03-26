@@ -54,7 +54,7 @@ export default function APPage() {
         <select
           value={status}
           onChange={(e) => { setStatus(e.target.value); reset(); }}
-          className="px-3 py-1.5 rounded border border-slate-200 text-sm bg-white"
+          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150 bg-white"
         >
           <option value="">All statuses</option>
           <option value="open">Open</option>
@@ -67,7 +67,7 @@ export default function APPage() {
           placeholder="Vendor code..."
           value={vendor}
           onChange={(e) => { setVendor(e.target.value); reset(); }}
-          className="px-3 py-1.5 rounded border border-slate-200 text-sm w-40"
+          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150 w-40"
         />
       </div>
 

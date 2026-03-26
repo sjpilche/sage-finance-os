@@ -58,44 +58,45 @@ export function DataTable<T extends Record<string, any>>({
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-slate-200 p-8 text-center text-sm text-slate-500">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8 text-center text-sm text-slate-500">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className={cn("bg-white rounded-lg border border-slate-200 overflow-hidden", className)}>
+    <div className={cn("bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden", className)}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 border-b border-slate-200">
+          <thead className="bg-slate-100/70 border-b border-slate-200">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-2.5 font-medium text-slate-600 whitespace-nowrap",
+                    "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700 whitespace-nowrap",
                     col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left",
-                    col.sortable && "cursor-pointer select-none hover:text-slate-900",
+                    col.sortable && "cursor-pointer select-none hover:bg-slate-200/60 transition-colors",
                     col.className
                   )}
                   onClick={col.sortable ? () => handleSort(col.key) : undefined}
                 >
                   {col.header}
                   {col.sortable && sortKey === col.key && (
-                    <span className="ml-1">{sortDir === "asc" ? "\u2191" : "\u2193"}</span>
+                    <span className="ml-1.5 text-slate-400">{sortDir === "asc" ? "\u2191" : "\u2193"}</span>
                   )}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {sorted.map((row) => (
+            {sorted.map((row, idx) => (
               <tr
                 key={String(row[keyField])}
                 className={cn(
-                  "border-t border-slate-100",
-                  onRowClick && "cursor-pointer hover:bg-slate-50"
+                  "border-t border-slate-100 transition-colors",
+                  idx % 2 === 1 && "bg-slate-50/50",
+                  onRowClick && "cursor-pointer hover:bg-slate-100"
                 )}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
