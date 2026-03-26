@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.env
+.env.local
+*.db
+node_modules/
+.next/
+ui/out/
+.DS_Store
+Thumbs.db

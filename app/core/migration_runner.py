@@ -1,0 +1,95 @@
+"""
+SQL-file migration runner.
+
+Runs numbered .sql files from sql/migrations/ in order.
+Tracks applied migrations in platform.schema_migrations.
+Each file should be idempotent (CREATE TABLE IF NOT EXISTS, etc.).
+"""
+
+from __future__ import annotations
+
+import logging
+import os
+import re
+from pathlib import Path
+
+import psycopg2
+
+from app.config import get_settings
+
+log = logging.getLogger(__name__)
+
+MIGRATIONS_DIR = Path(__file__).resolve().parent.parent.parent / "sql" / "migrations"
+
+_BOOTSTRAP_SQL = """
+CREATE SCHEMA IF NOT EXISTS platform;
+
+CREATE TABLE IF NOT EXISTS platform.schema_migrations (
+    migration_id    TEXT PRIMARY KEY,
+    filename        TEXT NOT NULL,
+    applied_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+"""
+
+
+def _get_migration_files() -> list[tuple[str, Path]]:
+    """Return sorted list of (migration_id, path) from the migrations directory."""
+    if not MIGRATIONS_DIR.exists():
+        return []
+
+    pattern = re.compile(r"^(\d{3}_.+)\.sql$")
+    files = []
+    for f in sorted(MIGRATIONS_DIR.iterdir()):
+        m = pattern.match(f.name)
+        if m:
+            files.append((m.group(1), f))
+    return files
+
+
+def run_migrations(dsn: str | None = None) -> int:
+    """Apply all pending migrations. Returns count of newly applied migrations."""
+    if dsn is None:
+        dsn = get_settings().DATABASE_URL_SYNC
+
+    conn = psycopg2.connect(dsn)
+    conn.autocommit = True
+
+    try:
+        with conn.cursor() as cur:
+            # Ensure the tracking table exists
+            cur.execute(_BOOTSTRAP_SQL)
+
+            # Get already-applied migrations
+            cur.execute("SELECT migration_id FROM platform.schema_migrations")
+            applied = {row[0] for row in cur.fetchall()}
+
+        files = _get_migration_files()
+        applied_count = 0
+
+        for migration_id, filepath in files:
+            if migration_id in applied:
+                continue
+
+            log.info("applying_migration", migration_id=migration_id, file=filepath.name)
+            sql = filepath.read_text(encoding="utf-8")
+
+            with conn.cursor() as cur:
+                cur.execute(sql)
+                cur.execute(
+                    "INSERT INTO platform.schema_migrations (migration_id, filename) "
+                    "VALUES (%s, %s) ON CONFLICT DO NOTHING",
+                    (migration_id, filepath.name),
+                )
+
+            applied_count += 1
+            log.info("migration_applied", migration_id=migration_id)
+
+        if applied_count == 0:
+            log.info("no_pending_migrations")
+        else:
+            log.info("migrations_complete", count=applied_count)
+
+        return applied_count
+
+    finally:
+        conn.close()

@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sage-finance-db
+    environment:
+      POSTGRES_USER: sage
+      POSTGRES_PASSWORD: sage
+      POSTGRES_DB: sage_finance
+    ports:
+      - "5432:5432"
+    volumes:
+      - sage_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sage -d sage_finance"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.sage
+    container_name: sage-finance-backend
+    ports:
+      - "8090:8090"
+    environment:
+      DATABASE_URL: "postgresql://sage:sage@db:5432/sage_finance"
+      DATABASE_URL_SYNC: "postgresql://sage:sage@db:5432/sage_finance"
+      ENVIRONMENT: development
+      RUN_MIGRATIONS: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  sage_pgdata:
