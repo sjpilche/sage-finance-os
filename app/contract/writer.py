@@ -120,14 +120,15 @@ def write_trial_balance(conn, tenant_id: str, run_id: str, records: list[dict]) 
         return 0
 
     cols = (
-        "tenant_id", "run_id", "account_number", "account_name",
+        "tenant_id", "run_id", "as_of_date", "account_number", "account_name",
         "beginning_balance", "total_debits", "total_credits", "ending_balance",
         "currency_code",
     )
     values = []
     for r in records:
+        as_of = _to_date(r.get("as_of_date")) or date.today()
         values.append((
-            tenant_id, run_id,
+            tenant_id, run_id, as_of,
             r.get("account_number", ""), r.get("account_name", ""),
             _to_decimal(r.get("beginning_balance", 0)),
             _to_decimal(r.get("total_debits", 0)),
