@@ -5,8 +5,19 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { ThemeProvider } from "@/components/ui/ThemeToggle";
 
 export const metadata: Metadata = {
-  title: "Sage Finance OS",
-  description: "Finance intelligence platform for Sage Intacct",
+  title: {
+    default: "Sage Finance OS",
+    template: "%s | Sage Finance OS",
+  },
+  description: "Finance intelligence platform that ingests from Sage Intacct and creates a trusted decision system. 43 API endpoints, 6-dimension quality gate, real-time analytics.",
+  icons: {
+    icon: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Sage Finance OS",
+    description: "Finance intelligence platform for Sage Intacct — ETL pipeline, trust scoring, and analytics dashboard.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

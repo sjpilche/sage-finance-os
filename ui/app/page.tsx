@@ -18,6 +18,10 @@ import {
   Timer,
   ShieldCheck,
   RefreshCw,
+  Database,
+  Lock,
+  BarChart3,
+  Zap,
 } from "lucide-react";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
 
@@ -35,12 +39,55 @@ export default function Dashboard() {
 
   if (isLoading) return <DashboardSkeleton />;
 
+  const totalRecords = Object.values(counts).reduce((a, b) => a + (b || 0), 0);
+
   return (
     <div>
+      {/* Hero Banner */}
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[var(--accent-darker)] via-[var(--accent)] to-teal-500 text-white p-6 sm:p-8 mb-8">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMCAyMGgyME0yMCAwdjIwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')] opacity-50" />
+        <div className="relative z-10">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Sage Finance OS</h1>
+          <p className="text-teal-100 mt-1 text-sm sm:text-base max-w-2xl">
+            Finance intelligence platform — Sage Intacct extraction, 6-dimension trust scoring, and real-time analytics.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-5">
+            <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2.5">
+              <Database size={18} className="text-teal-200 shrink-0" />
+              <div>
+                <div className="text-lg font-bold leading-tight">{formatNumber(totalRecords)}</div>
+                <div className="text-[11px] text-teal-200 uppercase tracking-wide">Records</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2.5">
+              <Lock size={18} className="text-teal-200 shrink-0" />
+              <div>
+                <div className="text-lg font-bold leading-tight">{latestScorecard ? `${latestScorecard.composite.toFixed(0)}%` : "--"}</div>
+                <div className="text-[11px] text-teal-200 uppercase tracking-wide">Trust Score</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2.5">
+              <BarChart3 size={18} className="text-teal-200 shrink-0" />
+              <div>
+                <div className="text-lg font-bold leading-tight">43</div>
+                <div className="text-[11px] text-teal-200 uppercase tracking-wide">API Endpoints</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2.5">
+              <Zap size={18} className="text-teal-200 shrink-0" />
+              <div>
+                <div className="text-lg font-bold leading-tight">{runs.length > 0 ? "Live" : "Ready"}</div>
+                <div className="text-[11px] text-teal-200 uppercase tracking-wide">Pipeline</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <PageHeader
         title="Dashboard"
         actions={
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-[var(--text-secondary)]">
             Last sync: {lastSync ? formatDateTime(lastSync) : "Never"}
           </div>
         }
