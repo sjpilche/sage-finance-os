@@ -10,7 +10,8 @@ import { DataTable, type Column } from "@/components/ui/DataTable";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { formatPct } from "@/lib/utils";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 import type { CloseChecklist, CloseCheckItem } from "@/lib/types/platform";
 import type { PeriodStatus } from "@/lib/types/semantic";
 
@@ -35,6 +36,7 @@ export default function PeriodClosePage() {
   const [fiscalPeriod, setFiscalPeriod] = useState<number | undefined>(new Date().getMonth() + 1);
   const [closing, setClosing] = useState(false);
   const [closeError, setCloseError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const periodParam = fiscalPeriod ? `&fiscal_period=${fiscalPeriod}` : "";
   const { data: checklistData, error: checklistError, isLoading: checklistLoading, mutate } =
@@ -57,8 +59,11 @@ export default function PeriodClosePage() {
         actor: "ui-user",
       });
       mutate();
+      toast(`Period P${fiscalPeriod} closed successfully`, "success");
     } catch (err) {
-      setCloseError(err instanceof Error ? err.message : "Failed to close period");
+      const msg = err instanceof Error ? err.message : "Failed to close period";
+      setCloseError(msg);
+      toast(msg, "error");
     } finally {
       setClosing(false);
     }
@@ -100,6 +105,7 @@ export default function PeriodClosePage() {
                 disabled={closing || !checklist.ready_to_close}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[var(--accent)] hover:bg-[var(--accent-light)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
+                {closing && <Loader2 size={14} className="animate-spin mr-1 inline" />}
                 {closing ? "Closing..." : `Close P${fiscalPeriod}`}
               </button>
             </div>

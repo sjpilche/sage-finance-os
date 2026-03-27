@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 export interface Column<T> {
@@ -33,6 +33,19 @@ export function DataTable<T extends Record<string, any>>({
 }: DataTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const check = () => setCanScrollRight(el.scrollWidth > el.clientWidth + el.scrollLeft + 1);
+    check();
+    el.addEventListener("scroll", check);
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => { el.removeEventListener("scroll", check); ro.disconnect(); };
+  }, [data]);
 
   const handleSort = (key: string) => {
     if (sortKey === key) {
@@ -58,28 +71,32 @@ export function DataTable<T extends Record<string, any>>({
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-8 text-center text-sm text-slate-500">
+      <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] shadow-sm p-8 text-center text-sm text-[var(--text-secondary)]">
         {emptyMessage}
       </div>
     );
   }
 
   return (
-    <div className={cn("bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden", className)}>
-      <div className="overflow-x-auto">
+    <div className={cn("bg-[var(--surface)] rounded-lg border border-[var(--border)] shadow-sm overflow-hidden relative", className)}>
+      {canScrollRight && (
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[var(--surface)] to-transparent z-10 pointer-events-none" />
+      )}
+      <div ref={scrollRef} className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-100/70 border-b border-slate-200">
+          <thead className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700 whitespace-nowrap",
+                    "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] whitespace-nowrap",
                     col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left",
                     col.sortable && "cursor-pointer select-none hover:bg-slate-200/60 transition-colors",
                     col.className
                   )}
                   onClick={col.sortable ? () => handleSort(col.key) : undefined}
+                  aria-sort={col.sortable && sortKey === col.key ? (sortDir === "asc" ? "ascending" : "descending") : col.sortable ? "none" : undefined}
                 >
                   {col.header}
                   {col.sortable && sortKey === col.key && (
@@ -94,11 +111,14 @@ export function DataTable<T extends Record<string, any>>({
               <tr
                 key={String(row[keyField])}
                 className={cn(
-                  "border-t border-slate-100 transition-colors",
-                  idx % 2 === 1 && "bg-slate-50/50",
-                  onRowClick && "cursor-pointer hover:bg-slate-100"
+                  "border-t border-[var(--border)] transition-colors",
+                  idx % 2 === 1 && "bg-[var(--bg-secondary)]/50",
+                  onRowClick && "cursor-pointer hover:bg-[var(--bg-hover)] focus-within:bg-[var(--bg-hover)]"
                 )}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
+                onKeyDown={onRowClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onRowClick(row); } } : undefined}
+                tabIndex={onRowClick ? 0 : undefined}
+                role={onRowClick ? "button" : undefined}
               >
                 {columns.map((col) => (
                   <td

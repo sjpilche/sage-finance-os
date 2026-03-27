@@ -32,7 +32,10 @@ export function QualityRadarChart({ scorecard }: QualityRadarChartProps) {
     fullMark: 100,
   }));
 
+  const summary = data.map((d) => `${d.dimension}: ${d.value.toFixed(1)}%`).join(", ");
+
   return (
+    <div role="img" aria-label={`Quality scorecard radar chart. Composite: ${scorecard.composite.toFixed(1)}%. ${summary}`}>
     <ResponsiveContainer width="100%" height={280}>
       <RechartsRadarChart data={data} cx="50%" cy="50%" outerRadius="75%">
         <PolarGrid stroke="#e2e8f0" />
@@ -59,5 +62,6 @@ export function QualityRadarChart({ scorecard }: QualityRadarChartProps) {
         />
       </RechartsRadarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

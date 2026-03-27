@@ -16,6 +16,13 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
+      {/* Skip to content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[9999] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-[var(--accent)] focus:text-white focus:rounded-lg focus:text-sm focus:font-medium"
+      >
+        Skip to main content
+      </a>
       {/* Desktop sidebar */}
       <div className="hidden lg:flex">
         <Sidebar />
@@ -37,7 +44,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-slate-200">
+        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-[var(--bg)] border-b border-[var(--border)]">
           <button
             onClick={() => setMobileOpen(true)}
             className="p-2 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25"
@@ -48,7 +55,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
           <span className="text-sm font-bold text-teal-700">Sage Finance OS</span>
         </div>
 
-        <main className="flex-1 bg-slate-50 p-4 sm:p-6 lg:p-8 overflow-auto">
+        <main id="main-content" className="flex-1 bg-[var(--bg-secondary)] p-4 sm:p-6 lg:p-8 overflow-auto">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>

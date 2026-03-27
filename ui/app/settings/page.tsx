@@ -10,6 +10,8 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { formatDateTime } from "@/lib/utils";
 import { ShieldAlert, ShieldOff } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
+import { useToast } from "@/components/ui/Toast";
 import type { KillSwitchRule, PlatformEvent } from "@/lib/types/platform";
 
 const eventColumns: Column<PlatformEvent>[] = [
@@ -32,6 +34,9 @@ export default function SettingsPage() {
   const { data: eventsData, error: eventsError, isLoading: eventsLoading } = useApi<PlatformEvent[]>("/v1/platform/events?limit=50");
   const { data: schedulerData } = useApi<Record<string, unknown>>("/v1/platform/scheduler");
   const [acting, setActing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const { toast } = useToast();
 
   const rules = ksData?.data || [];
   const events = eventsData?.data || [];
@@ -49,10 +54,17 @@ export default function SettingsPage() {
         actor: "ui-user",
       });
       ksMutate();
+      toast(`Kill switch ${action}d successfully`, "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Kill switch operation failed", "error");
     } finally {
       setActing(false);
+      setShowConfirm(false);
+      setConfirmText("");
     }
   };
+
+  const expectedConfirmText = globalRule?.is_active ? "DEACTIVATE" : "ACTIVATE";
 
   return (
     <div>
@@ -81,7 +93,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <button
-                onClick={toggleKillSwitch}
+                onClick={() => { setShowConfirm(true); setConfirmText(""); }}
                 disabled={acting}
                 className={`px-4 py-2 text-sm rounded font-medium transition-colors ${
                   globalRule.is_active
@@ -89,7 +101,7 @@ export default function SettingsPage() {
                     : "bg-red-600 hover:bg-red-700 text-white"
                 } disabled:opacity-50`}
               >
-                {acting ? "..." : globalRule.is_active ? "Deactivate" : "Activate"}
+                {globalRule.is_active ? "Deactivate" : "Activate"}
               </button>
             </div>
           )}
@@ -129,6 +141,50 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Kill Switch Confirmation Modal */}
+      <Modal open={showConfirm} onClose={() => { setShowConfirm(false); setConfirmText(""); }} title="Confirm Kill Switch">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600">
+            {globalRule?.is_active
+              ? "This will deactivate the global kill switch and resume all operations."
+              : "This will activate the global kill switch and block all sync and pipeline operations."}
+          </p>
+          <div>
+            <label htmlFor="ks-confirm" className="block text-sm font-medium text-slate-700 mb-1">
+              Type <span className="font-bold text-slate-900">{expectedConfirmText}</span> to confirm
+            </label>
+            <input
+              id="ks-confirm"
+              type="text"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              className="w-full px-3 py-2 rounded border border-slate-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-[var(--accent)]"
+              autoComplete="off"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => { setShowConfirm(false); setConfirmText(""); }}
+              className="px-3 py-2 text-sm rounded border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={toggleKillSwitch}
+              disabled={acting || confirmText !== expectedConfirmText}
+              className={`px-4 py-2 text-sm rounded font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                globalRule?.is_active
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-red-600 hover:bg-red-700 text-white"
+              }`}
+            >
+              {acting ? "Processing..." : `Yes, ${expectedConfirmText.toLowerCase()}`}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -18,7 +18,18 @@ interface ProfitabilityChartProps {
 }
 
 export function ProfitabilityChart({ segments }: ProfitabilityChartProps) {
+  if (!segments || segments.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[300px] bg-[var(--surface)] rounded-lg border border-[var(--border)] text-sm text-[var(--text-secondary)]">
+        No profitability data available
+      </div>
+    );
+  }
+
+  const summary = segments.map((s) => `${s.dimension_value}: net $${((s.net_income ?? 0) / 1000).toFixed(0)}k`).join(", ");
+
   return (
+    <div role="img" aria-label={`Profitability chart by segment. ${summary}`}>
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={segments} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -50,5 +61,6 @@ export function ProfitabilityChart({ segments }: ProfitabilityChartProps) {
         <Bar dataKey="net_income" fill={chartColors.green} radius={[4, 4, 0, 0]} animationDuration={600} />
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

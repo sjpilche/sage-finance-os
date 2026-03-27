@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   RefreshCw,
 } from "lucide-react";
+import { DashboardSkeleton } from "@/components/ui/Skeleton";
 
 export default function Dashboard() {
   const { data: summary } = useApi<Record<string, number>>("/v1/data/summary");
@@ -26,10 +27,13 @@ export default function Dashboard() {
   const { data: runsData } = useApi<SyncRun[]>("/v1/sync/runs?limit=5");
   const { data: scorecardData } = useApi<Scorecard[]>("/v1/quality/scorecards?limit=1");
 
+  const isLoading = !summary && !freshness;
   const counts = summary?.data || {};
   const lastSync = freshness?.data?.last_sync;
   const runs = runsData?.data || [];
   const latestScorecard = scorecardData?.data?.[0];
+
+  if (isLoading) return <DashboardSkeleton />;
 
   return (
     <div>
@@ -147,8 +151,8 @@ export default function Dashboard() {
                 <td className="px-4 py-2.5 text-slate-600">
                   {obj.last_sync_at ? formatDateTime(obj.last_sync_at) : "Never"}
                 </td>
-                <td className="px-4 py-2.5">{obj.hours_since_sync?.toFixed(1) ?? "\u2014"}</td>
-                <td className="px-4 py-2.5 text-right font-mono">{formatNumber(obj.row_count)}</td>
+                <td className="px-4 py-2.5 tabular-nums">{obj.hours_since_sync?.toFixed(1) ?? "\u2014"}</td>
+                <td className="px-4 py-2.5 text-right font-mono tabular-nums">{formatNumber(obj.row_count)}</td>
                 <td className="px-4 py-2.5">
                   <Badge variant={obj.is_stale ? "danger" : "success"}>
                     {obj.is_stale ? "Stale" : "Fresh"}

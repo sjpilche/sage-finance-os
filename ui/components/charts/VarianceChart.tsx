@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
   ReferenceLine,
+  LabelList,
 } from "recharts";
 import type { VarianceDetail } from "@/lib/types/analysis";
 import { formatCurrency, chartTooltipStyle, chartColors } from "@/lib/utils";
@@ -27,7 +28,11 @@ export function VarianceChart({ details, maxItems = 15 }: VarianceChartProps) {
 
   if (flagged.length === 0) return null;
 
+  const favorable = flagged.filter((d) => d.direction === "favorable").length;
+  const unfavorable = flagged.length - favorable;
+
   return (
+    <div role="img" aria-label={`Variance chart showing ${flagged.length} flagged accounts: ${favorable} favorable, ${unfavorable} unfavorable`}>
     <ResponsiveContainer width="100%" height={Math.max(200, flagged.length * 32 + 40)}>
       <BarChart data={flagged} layout="vertical" margin={{ top: 5, right: 20, left: 120, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" horizontal={false} />
@@ -48,6 +53,7 @@ export function VarianceChart({ details, maxItems = 15 }: VarianceChartProps) {
         />
         <ReferenceLine x={0} stroke="#94a3b8" />
         <Bar dataKey="variance" radius={[0, 4, 4, 0]} animationDuration={600}>
+          <LabelList dataKey="direction" position="right" style={{ fill: "#475569", fontSize: 10, textTransform: "uppercase" }} />
           {flagged.map((d, i) => (
             <Cell
               key={i}
@@ -57,5 +63,6 @@ export function VarianceChart({ details, maxItems = 15 }: VarianceChartProps) {
         </Bar>
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

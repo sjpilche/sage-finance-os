@@ -22,13 +22,58 @@
 
   /* Semantic */
   --success: #16a34a;
-  --warning: #eab308;
+  --warning: #d97706;
   --danger: #dc2626;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+
+  /* Surfaces (for components using these tokens) */
+  --surface: #ffffff;
+  --surface-secondary: #f8fafc;
+  --surface-hover: #f1f5f9;
+
+  /* Sidebar */
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #94a3b8;
+  --sidebar-active-bg: #1e293b;
+  --sidebar-border: #1e293b;
+}
+
+.dark {
+  --accent: #14a3a8;
+  --accent-light: #2dd4bf;
+  --accent-darker: #0f7173;
+
+  --bg: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-hover: #334155;
+
+  --text: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+
+  --border: #334155;
+  --border-strong: #475569;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+
+  --surface: #1e293b;
+  --surface-secondary: #0f172a;
+  --surface-hover: #334155;
+
+  --sidebar-bg: #020617;
+  --sidebar-text: #64748b;
+  --sidebar-active-bg: #0f172a;
+  --sidebar-border: #0f172a;
 }
 
 body {
@@ -57,11 +102,11 @@ textarea:focus {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-strong);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--text-tertiary);
 }
 
 /* Modal entrance animation */
@@ -74,4 +119,21 @@ textarea:focus {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Tabular figures for numeric data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }

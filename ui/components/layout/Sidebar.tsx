@@ -19,6 +19,7 @@ import {
   CalendarCheck,
   Settings,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface NavItem {
   href: string;
@@ -83,16 +84,17 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <nav className="w-64 bg-slate-900 text-white p-4 flex flex-col gap-0.5 shrink-0 overflow-y-auto">
+    <nav className="w-64 bg-slate-900 text-white p-4 flex flex-col gap-0.5 shrink-0 overflow-y-auto min-h-screen">
       {/* Logo */}
-      <div className="text-lg font-bold text-teal-400 px-2 pb-6 mb-2 border-b border-slate-800">
-        Sage Finance OS
+      <div className="flex items-center justify-between px-2 pb-6 mb-2 border-b border-slate-800">
+        <span className="text-lg font-bold text-teal-400">Sage Finance OS</span>
+        <ThemeToggle />
       </div>
 
       {sections.map((section, i) => (
         <div key={i}>
           {section.title && (
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-5 mb-1.5 px-2">
+            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-5 mb-1.5 px-2">
               {section.title}
             </div>
           )}

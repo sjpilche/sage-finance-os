@@ -9,8 +9,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import type { DQChecksResponse, DQCheck } from "@/lib/types/quality";
 import { formatPct } from "@/lib/utils";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
 const severityVariant: Record<string, "danger" | "warning" | "info" | "default"> = {
   critical: "danger",
@@ -52,12 +51,11 @@ export default function QualityDetailPage() {
 
   return (
     <div>
-      <Link
-        href="/quality"
-        className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4"
-      >
-        <ArrowLeft size={14} /> Back to Quality
-      </Link>
+      <Breadcrumb items={[
+        { label: "Dashboard", href: "/" },
+        { label: "Quality", href: "/quality" },
+        { label: runId ? `Run ${runId.slice(0, 8)}` : "Detail" },
+      ]} />
 
       <PageHeader
         title="DQ Check Results"

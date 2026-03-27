@@ -10,7 +10,8 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Modal } from "@/components/ui/Modal";
 import { formatDateTime } from "@/lib/utils";
-import { Play } from "lucide-react";
+import { Play, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 import type { SyncRun, Connection } from "@/lib/types/platform";
 
 const columns: Column<SyncRun>[] = [
@@ -48,6 +49,7 @@ export default function SyncPage() {
   const [selectedConn, setSelectedConn] = useState("");
   const [syncMode, setSyncMode] = useState<"full" | "incremental">("full");
   const [triggering, setTriggering] = useState(false);
+  const { toast } = useToast();
 
   const runs = data?.data || [];
   const connections = connData?.data || [];
@@ -63,6 +65,9 @@ export default function SyncPage() {
       });
       setShowTrigger(false);
       mutate();
+      toast("Sync triggered successfully", "success");
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Failed to trigger sync", "error");
     } finally {
       setTriggering(false);
     }
@@ -100,8 +105,9 @@ export default function SyncPage() {
       <Modal open={showTrigger} onClose={() => setShowTrigger(false)} title="Trigger Sync">
         <form onSubmit={handleTrigger} className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-600 mb-1">Connection</label>
+            <label htmlFor="sync-connection" className="block text-sm text-slate-600 mb-1">Connection</label>
             <select
+              id="sync-connection"
               required
               value={selectedConn}
               onChange={(e) => setSelectedConn(e.target.value)}
@@ -142,6 +148,7 @@ export default function SyncPage() {
               disabled={triggering || !selectedConn}
               className="px-4 py-2 text-sm rounded font-medium text-white bg-[var(--accent)] hover:bg-[var(--accent-light)] disabled:opacity-50"
             >
+              {triggering && <Loader2 size={14} className="animate-spin mr-1 inline" />}
               {triggering ? "Starting..." : "Start Sync"}
             </button>
           </div>

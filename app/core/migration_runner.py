@@ -9,8 +9,8 @@ Each file should be idempotent (CREATE TABLE IF NOT EXISTS, etc.).
 from __future__ import annotations
 
 import logging
-import os
 import re
+import time
 from pathlib import Path
 
 import psycopg2
@@ -20,6 +20,8 @@ from app.config import get_settings
 log = logging.getLogger(__name__)
 
 MIGRATIONS_DIR = Path(__file__).resolve().parent.parent.parent / "sql" / "migrations"
+MAX_RETRIES = 5
+INITIAL_BACKOFF_S = 1
 
 _BOOTSTRAP_SQL = """
 CREATE SCHEMA IF NOT EXISTS platform;
@@ -46,12 +48,30 @@ def _get_migration_files() -> list[tuple[str, Path]]:
     return files
 
 
+def _connect_with_retry(dsn: str) -> psycopg2.extensions.connection:
+    """Connect to PostgreSQL with exponential backoff retry."""
+    backoff = INITIAL_BACKOFF_S
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            conn = psycopg2.connect(dsn)
+            if attempt > 1:
+                log.info("db_connected attempt=%d", attempt)
+            return conn
+        except psycopg2.OperationalError as e:
+            if attempt == MAX_RETRIES:
+                log.error("db_connect_failed attempts=%d error=%s", MAX_RETRIES, e)
+                raise
+            log.warning("db_connect_retry attempt=%d/%d backoff=%ds error=%s", attempt, MAX_RETRIES, backoff, e)
+            time.sleep(backoff)
+            backoff *= 2
+
+
 def run_migrations(dsn: str | None = None) -> int:
     """Apply all pending migrations. Returns count of newly applied migrations."""
     if dsn is None:
         dsn = get_settings().DATABASE_URL_SYNC
 
-    conn = psycopg2.connect(dsn)
+    conn = _connect_with_retry(dsn)
     conn.autocommit = True
 
     try:
