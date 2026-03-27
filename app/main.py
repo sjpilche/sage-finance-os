@@ -31,7 +31,10 @@ async def lifespan(app: FastAPI):
 
     # ── Startup ──────────────────────────────────────────────
     setup_logging()
-    log.info("starting sage-finance-os env=%s", settings.ENVIRONMENT)
+    db_is_local = "localhost" in settings.DATABASE_URL
+    log.info("starting sage-finance-os env=%s db_local=%s", settings.ENVIRONMENT, db_is_local)
+    if db_is_local and settings.ENVIRONMENT == "production":
+        log.warning("DATABASE_URL points to localhost in production! Set DATABASE_URL env var to your managed database URL.")
 
     # Validate production secrets
     settings.validate_production()

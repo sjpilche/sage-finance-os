@@ -71,6 +71,14 @@ def run_migrations(dsn: str | None = None) -> int:
     if dsn is None:
         dsn = get_settings().DATABASE_URL_SYNC
 
+    # Log connection target (redact password) for deploy debugging
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(dsn)
+        log.info("migration_connect target=%s:%s/%s", parsed.hostname, parsed.port, parsed.path.lstrip("/"))
+    except Exception:
+        log.info("migration_connect target=<unparseable>")
+
     conn = _connect_with_retry(dsn)
     conn.autocommit = True
 
