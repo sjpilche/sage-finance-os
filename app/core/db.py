@@ -47,11 +47,7 @@ async def get_pool() -> asyncpg.Pool:
             command_timeout=settings.DB_COMMAND_TIMEOUT,
             init=_init_connection,
         )
-        log.info(
-            "async_pool_created",
-            min_size=settings.DB_POOL_MIN,
-            max_size=settings.DB_POOL_MAX,
-        )
+        log.info("async_pool_created min_size=%d max_size=%d", settings.DB_POOL_MIN, settings.DB_POOL_MAX)
     return _pool
 
 

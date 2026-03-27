@@ -39,7 +39,7 @@ async def deep_health():
             row = await conn.fetchval("SELECT 1")
             checks["database"] = {"status": "healthy", "result": row}
     except Exception as e:
-        log.error("deep_health_db_failed", error=str(e))
+        log.error("deep_health_db_failed error=%s", e)
         checks["database"] = {"status": "unhealthy", "error": str(e)}
 
     overall = "healthy" if all(

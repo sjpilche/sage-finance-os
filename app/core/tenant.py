@@ -67,7 +67,7 @@ def create_run(
         )
     conn.commit()
 
-    log.info("run_created", run_id=run_id, tenant_id=tenant_id, source_type=source_type, mode=mode)
+    log.info("run_created run_id=%s tenant_id=%s source_type=%s mode=%s", run_id, tenant_id, source_type, mode)
 
     return RunContext(
         run_id=run_id,
@@ -87,7 +87,7 @@ def update_run_status(conn, run_id: str, status: str) -> None:
             (status, run_id),
         )
     conn.commit()
-    log.info("run_status_updated", run_id=run_id, status=status)
+    log.info("run_status_updated run_id=%s status=%s", run_id, status)
 
 
 def complete_run(conn, run_id: str, summary: dict | None = None) -> None:
@@ -103,7 +103,7 @@ def complete_run(conn, run_id: str, summary: dict | None = None) -> None:
             (now, json.dumps(summary) if summary else None, run_id),
         )
     conn.commit()
-    log.info("run_completed", run_id=run_id, summary=summary)
+    log.info("run_completed run_id=%s", run_id)
 
 
 def fail_run(conn, run_id: str, error_message: str) -> None:
@@ -119,4 +119,4 @@ def fail_run(conn, run_id: str, error_message: str) -> None:
             (now, error_message[:2000], run_id),
         )
     conn.commit()
-    log.error("run_failed", run_id=run_id, error=error_message[:200])
+    log.error("run_failed run_id=%s error=%s", run_id, error_message[:200])

@@ -98,7 +98,7 @@ def run_migrations(dsn: str | None = None) -> int:
             if migration_id in applied:
                 continue
 
-            log.info("applying_migration", migration_id=migration_id, file=filepath.name)
+            log.info("applying_migration id=%s file=%s", migration_id, filepath.name)
             sql = filepath.read_text(encoding="utf-8")
 
             with conn.cursor() as cur:
@@ -110,12 +110,12 @@ def run_migrations(dsn: str | None = None) -> int:
                 )
 
             applied_count += 1
-            log.info("migration_applied", migration_id=migration_id)
+            log.info("migration_applied id=%s", migration_id)
 
         if applied_count == 0:
             log.info("no_pending_migrations")
         else:
-            log.info("migrations_complete", count=applied_count)
+            log.info("migrations_complete count=%d", applied_count)
 
         return applied_count
 
