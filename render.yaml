@@ -1,15 +1,15 @@
 databases:
   - name: sage-finance-db
-    plan: free
+    plan: starter
     databaseName: sage_finance
     user: sage
-    postgresMajorVersion: "16"
+    postgresMajorVersion: 16
 
 services:
   - type: web
     name: sage-finance-api
     runtime: docker
-    plan: free
+    plan: starter
     dockerfilePath: ./Dockerfile
     envVars:
       - key: DATABASE_URL
