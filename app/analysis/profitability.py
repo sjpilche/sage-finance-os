@@ -13,6 +13,9 @@ import logging
 log = logging.getLogger(__name__)
 
 
+_VALID_DIMENSIONS = {"dimension_1", "dimension_2", "dimension_3"}
+
+
 def get_profitability_by_dimension(
     conn, tenant_id: str,
     fiscal_year: int,
@@ -26,6 +29,9 @@ def get_profitability_by_dimension(
     ----------
     dimension: Which GL dimension to group by (dimension_1, dimension_2, dimension_3).
     """
+    if dimension not in _VALID_DIMENSIONS:
+        raise ValueError(f"Invalid dimension: {dimension}. Must be one of {sorted(_VALID_DIMENSIONS)}")
+
     period_filter = "AND g.fiscal_period = %s" if fiscal_period else ""
     params = [tenant_id, fiscal_year]
     if fiscal_period:

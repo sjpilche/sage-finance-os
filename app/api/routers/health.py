@@ -40,7 +40,7 @@ async def deep_health():
             checks["database"] = {"status": "healthy", "result": row}
     except Exception as e:
         log.error("deep_health_db_failed error=%s", e)
-        checks["database"] = {"status": "unhealthy", "error": str(e)}
+        checks["database"] = {"status": "unhealthy"}
 
     overall = "healthy" if all(
         c.get("status") == "healthy" for c in checks.values()

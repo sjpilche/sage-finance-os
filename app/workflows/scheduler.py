@@ -172,7 +172,9 @@ async def _job_incremental_sync() -> None:
 
         for row in rows:
             connection_id = str(row["connection_id"])
-            creds = json.loads(row["credentials"]) if row["credentials"] else {}
+            from app.core.crypto import decrypt_credentials, is_encrypted
+            raw_creds = row["credentials"] or ""
+            creds = decrypt_credentials(raw_creds) if raw_creds and is_encrypted(raw_creds) else (json.loads(raw_creds) if raw_creds else {})
 
             try:
                 def _sync():

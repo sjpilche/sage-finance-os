@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # ── Certificate Signing ──────────────────────────────────────
+    CERT_SIGNING_KEY: str = "dev-signing-key-change-in-production"
+
     # ── Sage Intacct (defaults empty — configured per-connection) ─
     SAGE_INTACCT_SENDER_ID: str = ""
     SAGE_INTACCT_SENDER_PASSWORD: str = ""
@@ -63,6 +66,7 @@ class Settings(BaseSettings):
         defaults = {
             "API_KEY": "dev-api-key",
             "JWT_SECRET_KEY": "dev-jwt-secret-change-in-production",
+            "CERT_SIGNING_KEY": "dev-signing-key-change-in-production",
         }
         for key, default_val in defaults.items():
             if getattr(self, key) == default_val:

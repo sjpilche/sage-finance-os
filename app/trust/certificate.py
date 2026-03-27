@@ -42,9 +42,9 @@ class Certificate:
 
 
 def _get_signing_key() -> bytes:
-    """Resolve HMAC signing key from environment."""
-    key = os.getenv("CERT_SIGNING_KEY", "dev-signing-key-change-in-production")
-    return key.encode()
+    """Resolve HMAC signing key from settings."""
+    from app.config import get_settings
+    return get_settings().CERT_SIGNING_KEY.encode()
 
 
 def generate_certificate(scorecard: ScoreCard) -> Certificate:

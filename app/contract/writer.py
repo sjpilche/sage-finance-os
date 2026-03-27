@@ -106,7 +106,6 @@ def write_gl_entries(conn, tenant_id: str, run_id: str, records: list[dict]) -> 
     sql = f"INSERT INTO contract.gl_entry ({', '.join(cols)}) VALUES %s"
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: gl_entry — %d rows inserted (run=%s)", len(values), run_id)
     return len(values)
@@ -140,7 +139,6 @@ def write_trial_balance(conn, tenant_id: str, run_id: str, records: list[dict]) 
     sql = f"INSERT INTO contract.trial_balance ({', '.join(cols)}) VALUES %s"
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: trial_balance — %d rows inserted (run=%s)", len(values), run_id)
     return len(values)
@@ -175,7 +173,6 @@ def write_ap_invoices(conn, tenant_id: str, run_id: str, records: list[dict]) ->
     sql = f"INSERT INTO contract.ap_invoice ({', '.join(cols)}) VALUES %s"
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: ap_invoice — %d rows inserted (run=%s)", len(values), run_id)
     return len(values)
@@ -210,7 +207,6 @@ def write_ar_invoices(conn, tenant_id: str, run_id: str, records: list[dict]) ->
     sql = f"INSERT INTO contract.ar_invoice ({', '.join(cols)}) VALUES %s"
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: ar_invoice — %d rows inserted (run=%s)", len(values), run_id)
     return len(values)
@@ -252,7 +248,6 @@ def write_vendors(conn, tenant_id: str, run_id: str, records: list[dict]) -> int
     """
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: vendor — %d rows upserted (run=%s)", len(values), run_id)
     return len(values)
@@ -297,7 +292,6 @@ def write_customers(conn, tenant_id: str, run_id: str, records: list[dict]) -> i
     """
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: customer — %d rows upserted (run=%s)", len(values), run_id)
     return len(values)
@@ -341,7 +335,6 @@ def write_chart_of_accounts(conn, tenant_id: str, run_id: str, records: list[dic
     """
     with conn.cursor() as cur:
         execute_values(cur, sql, values, page_size=1000)
-    conn.commit()
 
     log.info("writer: chart_of_accounts — %d rows upserted (run=%s)", len(values), run_id)
     return len(values)
@@ -381,6 +374,10 @@ def write_all(conn, tenant_id: str, run_id: str, data: dict[str, list[dict]]) ->
             log.warning("writer: no writer for object %s — skipping %d records", object_name, len(records))
             continue
         counts[object_name] = writer(conn, tenant_id, run_id, records)
+
+    # Single commit after all writes succeed — prevents partial data on failure
+    conn.commit()
+    log.info("writer: committed all objects — %s", counts)
     return counts
 
 

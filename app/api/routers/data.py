@@ -24,10 +24,20 @@ from fastapi.responses import StreamingResponse
 
 from app.api.models.responses import wrap_response
 from app.core.deps import require_db
+from app.core.errors import ValidationError
 
 log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/v1/data", tags=["data"])
+
+_DEFAULT_TENANT = "default"
+
+
+async def _get_tenant_id(conn: asyncpg.Connection) -> str:
+    row = await conn.fetchrow("SELECT tenant_id FROM platform.tenants WHERE slug = $1", _DEFAULT_TENANT)
+    if not row:
+        raise ValidationError("Default tenant not found")
+    return str(row["tenant_id"])
 
 
 def _rows_to_csv(rows: list[dict], columns: list[str] | None = None) -> StreamingResponse:
@@ -146,17 +156,19 @@ async def get_trial_balance(
     conn: asyncpg.Connection = Depends(require_db),
 ):
     """Query trial balance."""
-    count = await conn.fetchval("SELECT count(*) FROM contract.trial_balance")
+    tenant_id = await _get_tenant_id(conn)
+    count = await conn.fetchval("SELECT count(*) FROM contract.trial_balance WHERE tenant_id = $1", tenant_id)
     rows = await conn.fetch(
         """
         SELECT tb_id, as_of_date, account_number, account_name,
                beginning_balance, total_debits, total_credits, ending_balance,
                currency_code, created_at
         FROM contract.trial_balance
+        WHERE tenant_id = $1
         ORDER BY account_number
-        LIMIT $1 OFFSET $2
+        LIMIT $2 OFFSET $3
         """,
-        limit, offset,
+        tenant_id, limit, offset,
     )
 
     return wrap_response({
@@ -266,16 +278,18 @@ async def get_vendors(
     conn: asyncpg.Connection = Depends(require_db),
 ):
     """Query vendor master."""
-    count = await conn.fetchval("SELECT count(*) FROM contract.vendor")
+    tenant_id = await _get_tenant_id(conn)
+    count = await conn.fetchval("SELECT count(*) FROM contract.vendor WHERE tenant_id = $1", tenant_id)
     rows = await conn.fetch(
         """
         SELECT vendor_id, vendor_code, vendor_name, status, payment_terms,
                contact_email, created_at
         FROM contract.vendor
+        WHERE tenant_id = $1
         ORDER BY vendor_name
-        LIMIT $1 OFFSET $2
+        LIMIT $2 OFFSET $3
         """,
-        limit, offset,
+        tenant_id, limit, offset,
     )
 
     return wrap_response({
@@ -293,16 +307,18 @@ async def get_customers(
     conn: asyncpg.Connection = Depends(require_db),
 ):
     """Query customer master."""
-    count = await conn.fetchval("SELECT count(*) FROM contract.customer")
+    tenant_id = await _get_tenant_id(conn)
+    count = await conn.fetchval("SELECT count(*) FROM contract.customer WHERE tenant_id = $1", tenant_id)
     rows = await conn.fetch(
         """
         SELECT customer_id, customer_code, customer_name, status, payment_terms,
                contact_email, credit_limit, created_at
         FROM contract.customer
+        WHERE tenant_id = $1
         ORDER BY customer_name
-        LIMIT $1 OFFSET $2
+        LIMIT $2 OFFSET $3
         """,
-        limit, offset,
+        tenant_id, limit, offset,
     )
 
     return wrap_response({

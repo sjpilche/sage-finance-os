@@ -20,6 +20,7 @@ from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
 from app.api.models.responses import wrap_response
+from app.core.crypto import decrypt_credentials, is_encrypted
 from app.core.deps import require_db
 from app.core.errors import NotFoundError, ValidationError
 from app.ingestion.connectors.sage_intacct import SageIntacctConnector
@@ -74,7 +75,8 @@ async def trigger_sync(body: SyncTrigger, conn: asyncpg.Connection = Depends(req
     if invalid:
         raise ValidationError(f"Unknown objects: {invalid}. Valid: {sorted(OBJECT_NAMES)}")
 
-    creds = json.loads(conn_row["credentials"]) if conn_row["credentials"] else {}
+    raw_creds = conn_row["credentials"] or ""
+    creds = decrypt_credentials(raw_creds) if raw_creds and is_encrypted(raw_creds) else (json.loads(raw_creds) if raw_creds else {})
 
     # Launch pipeline in background thread
     async def _run_pipeline():
@@ -189,7 +191,8 @@ async def get_schema(
     if not conn_row:
         raise NotFoundError(f"Connection {connection_id} not found")
 
-    creds = json.loads(conn_row["credentials"]) if conn_row["credentials"] else {}
+    raw_creds = conn_row["credentials"] or ""
+    creds = decrypt_credentials(raw_creds) if raw_creds and is_encrypted(raw_creds) else (json.loads(raw_creds) if raw_creds else {})
 
     def _get_schema():
         connector = SageIntacctConnector(config=creds)

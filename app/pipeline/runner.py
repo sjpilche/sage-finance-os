@@ -66,6 +66,12 @@ def run_pipeline(
     start = time.monotonic()
 
     try:
+        # Acquire advisory lock to prevent concurrent pipeline runs for this connection
+        lock_key = connection_id or tenant_id
+        with conn.cursor() as cur:
+            cur.execute("SELECT pg_advisory_lock(hashtext(%s))", (f"pipeline_{lock_key}",))
+        log.info("pipeline: acquired lock for %s", lock_key[:8] if lock_key else "default")
+
         # Phase: Extracting
         update_run_status(conn, ctx.run_id, "extracting")
 
@@ -166,6 +172,14 @@ def run_pipeline(
             "error": str(e),
             "elapsed_seconds": elapsed,
         }
+
+    finally:
+        # Release advisory lock
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT pg_advisory_unlock(hashtext(%s))", (f"pipeline_{lock_key}",))
+        except Exception:
+            pass  # connection may already be closed
 
 
 def _materialize_kpis(conn, tenant_id: str, run_id: str) -> dict:

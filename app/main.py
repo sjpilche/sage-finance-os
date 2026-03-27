@@ -120,6 +120,9 @@ def create_app() -> FastAPI:
         )
 
     # ── Routers ──────────────────────────────────────────────
+    from fastapi import Depends as _Depends
+    from app.auth.middleware import require_auth
+
     from app.api.routers.health import router as health_router
     from app.api.routers.connections import router as connections_router
     from app.api.routers.sync import router as sync_router
@@ -129,14 +132,16 @@ def create_app() -> FastAPI:
     from app.api.routers.analysis import router as analysis_router
     from app.api.routers.platform import router as platform_router
 
-    app.include_router(health_router)
-    app.include_router(connections_router)
-    app.include_router(sync_router)
-    app.include_router(data_router)
-    app.include_router(quality_router)
-    app.include_router(semantic_router)
-    app.include_router(analysis_router)
-    app.include_router(platform_router)
+    _auth = [_Depends(require_auth)]
+
+    app.include_router(health_router)  # public — no auth
+    app.include_router(connections_router, dependencies=_auth)
+    app.include_router(sync_router, dependencies=_auth)
+    app.include_router(data_router, dependencies=_auth)
+    app.include_router(quality_router, dependencies=_auth)
+    app.include_router(semantic_router, dependencies=_auth)
+    app.include_router(analysis_router, dependencies=_auth)
+    app.include_router(platform_router, dependencies=_auth)
 
     return app
 

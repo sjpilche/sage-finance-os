@@ -70,9 +70,15 @@ def test_different_signing_key_fails_verification():
     sc = _make_scorecard()
     cert = generate_certificate(sc)
 
-    # Change signing key after generation
-    with patch.dict(os.environ, {"CERT_SIGNING_KEY": "different-key"}):
-        assert verify_certificate(cert) is False
+    # Change signing key after generation — must clear settings singleton
+    import app.config as cfg
+    original = cfg._settings
+    try:
+        cfg._settings = None
+        with patch.dict(os.environ, {"CERT_SIGNING_KEY": "different-key"}):
+            assert verify_certificate(cert) is False
+    finally:
+        cfg._settings = original
 
 
 def test_certificate_deterministic_for_same_scorecard():

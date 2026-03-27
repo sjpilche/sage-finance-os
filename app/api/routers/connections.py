@@ -20,6 +20,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from app.api.models.responses import wrap_response
+from app.core.crypto import encrypt_credentials, decrypt_credentials, is_encrypted
 from app.core.deps import require_db
 from app.core.errors import NotFoundError, ValidationError
 
@@ -68,7 +69,7 @@ async def create_connection(body: ConnectionCreate, conn: asyncpg.Connection = D
         VALUES ($1, 'sage_intacct', $2, $3, 'pending')
         RETURNING connection_id, tenant_id, provider, name, status, created_at
         """,
-        tenant_id, body.name, json.dumps(body.credentials),
+        tenant_id, body.name, encrypt_credentials(body.credentials),
     )
 
     return wrap_response({
@@ -125,8 +126,9 @@ async def get_connection(connection_id: UUID, conn: asyncpg.Connection = Depends
     if not row:
         raise NotFoundError(f"Connection {connection_id} not found")
 
-    # Redact sensitive fields
-    creds = json.loads(row["credentials"]) if row["credentials"] else {}
+    # Decrypt and redact sensitive fields
+    raw_creds = row["credentials"] or ""
+    creds = decrypt_credentials(raw_creds) if raw_creds and is_encrypted(raw_creds) else (json.loads(raw_creds) if raw_creds else {})
     redacted = {k: ("***" if "password" in k.lower() or "secret" in k.lower() else v)
                 for k, v in creds.items()}
 
@@ -153,7 +155,8 @@ async def test_connection(connection_id: UUID, conn: asyncpg.Connection = Depend
     if not row:
         raise NotFoundError(f"Connection {connection_id} not found")
 
-    creds = json.loads(row["credentials"]) if row["credentials"] else {}
+    raw_creds = row["credentials"] or ""
+    creds = decrypt_credentials(raw_creds) if raw_creds and is_encrypted(raw_creds) else (json.loads(raw_creds) if raw_creds else {})
 
     # Run connector test in thread (sync requests library)
     from app.ingestion.connectors.sage_intacct import SageIntacctConnector
