@@ -30,7 +30,7 @@ export function ProfitabilityChart({ segments }: ProfitabilityChartProps) {
 
   return (
     <div role="img" aria-label={`Profitability chart by segment. ${summary}`}>
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={240} className="sm:!h-[300px]">
       <BarChart data={segments} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
         <XAxis

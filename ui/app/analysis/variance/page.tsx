@@ -78,7 +78,7 @@ export default function VariancePage() {
         title="Variance Analysis"
         subtitle="Budget vs actual comparison"
         actions={
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <FiscalPeriodSelector
               fiscalYear={fiscalYear}
               fiscalPeriod={fiscalPeriod}
@@ -86,11 +86,11 @@ export default function VariancePage() {
               onPeriodChange={setFiscalPeriod}
             />
             <div className="flex items-center gap-1.5">
-              <label className="text-sm text-slate-500">Threshold</label>
+              <label className="text-sm text-[var(--text-secondary)]">Threshold</label>
               <select
                 value={threshold}
                 onChange={(e) => setThreshold(Number(e.target.value))}
-                className="px-2 py-1.5 rounded border border-slate-200 text-sm bg-white"
+                className="px-2 py-1.5 rounded border border-[var(--border)] text-sm bg-[var(--surface)]"
               >
                 {[5, 10, 15, 20, 25].map((t) => (
                   <option key={t} value={t}>{t}%</option>

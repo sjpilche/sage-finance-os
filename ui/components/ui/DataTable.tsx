@@ -90,7 +90,7 @@ export function DataTable<T extends Record<string, any>>({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] whitespace-nowrap",
+                    "px-3 py-2.5 sm:px-4 sm:py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] whitespace-nowrap",
                     col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left",
                     col.sortable && "cursor-pointer select-none hover:bg-slate-200/60 transition-colors",
                     col.className
@@ -124,7 +124,7 @@ export function DataTable<T extends Record<string, any>>({
                   <td
                     key={col.key}
                     className={cn(
-                      "px-4 py-2.5",
+                      "px-3 py-2 sm:px-4 sm:py-2.5 text-sm",
                       col.align === "right" ? "text-right" : col.align === "center" ? "text-center" : "text-left",
                       col.className
                     )}

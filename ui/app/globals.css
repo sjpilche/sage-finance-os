@@ -82,6 +82,19 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* iOS Safari viewport fix */
+html {
+  min-height: 100dvh;
+}
+
+/* Prevent iOS zoom on input focus (min 16px) */
+@media (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* Base form focus styles — applies globally to all inputs */

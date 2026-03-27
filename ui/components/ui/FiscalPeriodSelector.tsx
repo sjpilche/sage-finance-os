@@ -13,7 +13,7 @@ const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 const periods = Array.from({ length: 12 }, (_, i) => i + 1);
 
 const selectClass =
-  "px-3 py-2 rounded-lg border border-slate-300 text-sm font-medium bg-white transition-colors duration-150 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 focus:border-[var(--accent)]";
+  "px-2.5 py-2 rounded-lg border border-[var(--border)] text-sm font-medium bg-[var(--surface)] transition-colors duration-150 hover:border-[var(--border-strong)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 focus:border-[var(--accent)]";
 
 export function FiscalPeriodSelector({
   fiscalYear,
@@ -23,9 +23,9 @@ export function FiscalPeriodSelector({
   showPeriod = true,
 }: FiscalPeriodSelectorProps) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2">
-        <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Year</label>
+    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <label className="text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">Year</label>
         <select
           value={fiscalYear}
           onChange={(e) => onYearChange(Number(e.target.value))}
@@ -37,8 +37,8 @@ export function FiscalPeriodSelector({
         </select>
       </div>
       {showPeriod && onPeriodChange && (
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium uppercase tracking-wide text-slate-500">Period</label>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <label className="text-xs font-medium uppercase tracking-wide text-[var(--text-tertiary)]">Period</label>
           <select
             value={fiscalPeriod ?? ""}
             onChange={(e) => onPeriodChange(e.target.value ? Number(e.target.value) : undefined)}

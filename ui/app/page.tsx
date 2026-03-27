@@ -132,28 +132,29 @@ export default function Dashboard() {
       </div>
 
       {/* Data Freshness */}
-      <h2 className="text-lg font-semibold text-slate-800 mb-3">Data Freshness</h2>
-      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+      <h2 className="text-lg font-semibold text-[var(--text)] mb-3">Data Freshness</h2>
+      <div className="bg-[var(--surface)] rounded-lg border border-[var(--border)] shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-slate-100/70 border-b border-slate-200">
+          <thead className="bg-[var(--bg-secondary)] border-b border-[var(--border)]">
             <tr>
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Object</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Last Sync</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Hours Ago</th>
-              <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Row Count</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-700">Status</th>
+              <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Object</th>
+              <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)] hidden sm:table-cell">Last Sync</th>
+              <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Hours Ago</th>
+              <th className="text-right px-3 py-2.5 sm:px-4 sm:py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Rows</th>
+              <th className="text-left px-3 py-2.5 sm:px-4 sm:py-3 text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Status</th>
             </tr>
           </thead>
           <tbody>
             {(freshness?.data?.objects || []).map((obj, idx) => (
-              <tr key={obj.object_name} className={cn("border-t border-slate-100", idx % 2 === 1 && "bg-slate-50/50")}>
-                <td className="px-4 py-2.5 font-mono">{obj.object_name}</td>
-                <td className="px-4 py-2.5 text-slate-600">
+              <tr key={obj.object_name} className={cn("border-t border-[var(--border)]", idx % 2 === 1 && "bg-[var(--bg-secondary)]/50")}>
+                <td className="px-3 py-2 sm:px-4 sm:py-2.5 font-mono text-xs sm:text-sm">{obj.object_name}</td>
+                <td className="px-3 py-2 sm:px-4 sm:py-2.5 text-[var(--text-secondary)] hidden sm:table-cell">
                   {obj.last_sync_at ? formatDateTime(obj.last_sync_at) : "Never"}
                 </td>
-                <td className="px-4 py-2.5 tabular-nums">{obj.hours_since_sync?.toFixed(1) ?? "\u2014"}</td>
-                <td className="px-4 py-2.5 text-right font-mono tabular-nums">{formatNumber(obj.row_count)}</td>
-                <td className="px-4 py-2.5">
+                <td className="px-3 py-2 sm:px-4 sm:py-2.5 tabular-nums">{obj.hours_since_sync?.toFixed(1) ?? "\u2014"}</td>
+                <td className="px-3 py-2 sm:px-4 sm:py-2.5 text-right font-mono tabular-nums">{formatNumber(obj.row_count)}</td>
+                <td className="px-3 py-2 sm:px-4 sm:py-2.5">
                   <Badge variant={obj.is_stale ? "danger" : "success"}>
                     {obj.is_stale ? "Stale" : "Fresh"}
                   </Badge>
@@ -162,6 +163,7 @@ export default function Dashboard() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

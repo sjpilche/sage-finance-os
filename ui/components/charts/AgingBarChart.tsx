@@ -39,7 +39,7 @@ export function AgingBarChart({ buckets, title }: AgingBarChartProps) {
     <div>
       <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-3">{title}</h3>
       <div role="img" aria-label={`${title} bar chart. ${summary}`}>
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={200} className="sm:!h-[240px]">
         <BarChart data={buckets} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis

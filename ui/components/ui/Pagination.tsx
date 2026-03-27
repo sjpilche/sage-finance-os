@@ -17,9 +17,9 @@ export function Pagination({ offset, limit, total, onNext, onPrev }: PaginationP
   const to = Math.min(offset + limit, total);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-sm mt-2">
-      <div className="text-sm text-[var(--text-secondary)]">
-        Showing <span className="font-medium text-[var(--text)]">{from}&ndash;{to}</span> of{" "}
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3 bg-[var(--surface)] border border-[var(--border)] rounded-lg shadow-sm mt-2">
+      <div className="text-xs sm:text-sm text-[var(--text-secondary)]">
+        <span className="font-medium text-[var(--text)]">{from}&ndash;{to}</span> of{" "}
         <span className="font-medium text-[var(--text)]">{total.toLocaleString()}</span>
       </div>
       <div className="flex items-center gap-2">

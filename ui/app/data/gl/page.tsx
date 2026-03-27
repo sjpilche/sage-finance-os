@@ -57,25 +57,25 @@ function GLPageContent() {
       />
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mb-4">
         <input
           type="text"
           placeholder="Account number..."
           value={account}
           onChange={(e) => { setAccount(e.target.value); reset(); }}
-          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150 w-40"
+          className="px-3 py-2.5 rounded-lg border border-[var(--border)] text-sm bg-[var(--surface)] transition-colors duration-150"
         />
         <input
           type="date"
           value={dateFrom}
           onChange={(e) => { setDateFrom(e.target.value); reset(); }}
-          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150"
+          className="px-3 py-2.5 rounded-lg border border-[var(--border)] text-sm bg-[var(--surface)] transition-colors duration-150"
         />
         <input
           type="date"
           value={dateTo}
           onChange={(e) => { setDateTo(e.target.value); reset(); }}
-          className="px-3 py-2 rounded-lg border border-slate-300 text-sm transition-colors duration-150"
+          className="px-3 py-2.5 rounded-lg border border-[var(--border)] text-sm bg-[var(--surface)] transition-colors duration-150"
         />
       </div>
 
