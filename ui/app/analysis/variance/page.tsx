@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useApi } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { KpiCard } from "@/components/ui/KpiCard";
@@ -59,6 +60,7 @@ const columns: Column<VarianceDetail>[] = [
 ];
 
 export default function VariancePage() {
+  const router = useRouter();
   const [fiscalYear, setFiscalYear] = useState(new Date().getFullYear());
   const [fiscalPeriod, setFiscalPeriod] = useState<number | undefined>(undefined);
   const [threshold, setThreshold] = useState(10);
@@ -125,12 +127,13 @@ export default function VariancePage() {
             <VarianceChart details={report.details} />
           </Card>
 
-          {/* Detail Table */}
+          {/* Detail Table — click to drill into GL */}
           <DataTable
             columns={columns}
             data={report.details}
             keyField="account_number"
             emptyMessage="No variance data for this period"
+            onRowClick={(row) => router.push(`/data/gl?account=${encodeURIComponent(row.account_number)}`)}
           />
         </div>
       )}

@@ -13,11 +13,14 @@ GET /v1/data/summary     — Row counts per table
 
 from __future__ import annotations
 
+import csv
+import io
 import logging
 from datetime import date
 
 import asyncpg
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import StreamingResponse
 
 from app.api.models.responses import wrap_response
 from app.core.deps import require_db
@@ -25,6 +28,27 @@ from app.core.deps import require_db
 log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/v1/data", tags=["data"])
+
+
+def _rows_to_csv(rows: list[dict], columns: list[str] | None = None) -> StreamingResponse:
+    """Convert list of dicts to a CSV streaming response."""
+    if not rows:
+        buf = io.StringIO("No data\n")
+        return StreamingResponse(iter([buf.getvalue()]), media_type="text/csv")
+
+    cols = columns or list(rows[0].keys())
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({k: str(v) if v is not None else "" for k, v in row.items() if k in cols})
+
+    buf.seek(0)
+    return StreamingResponse(
+        iter([buf.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=export.csv"},
+    )
 
 
 @router.get("/summary")
@@ -56,6 +80,7 @@ async def get_gl_entries(
     date_from: date | None = Query(None),
     date_to: date | None = Query(None),
     dimension_1: str | None = Query(None, description="Filter by dimension_1 (department)"),
+    format: str | None = Query(None, description="Response format: json (default) or csv"),
     conn: asyncpg.Connection = Depends(require_db),
 ):
     """Query GL journal entries with optional filters."""
@@ -101,11 +126,16 @@ async def get_gl_entries(
         *params, limit, offset,
     )
 
+    row_dicts = [dict(r) for r in rows]
+
+    if format == "csv":
+        return _rows_to_csv(row_dicts)
+
     return wrap_response({
         "total": count,
         "limit": limit,
         "offset": offset,
-        "rows": [dict(r) for r in rows],
+        "rows": row_dicts,
     })
 
 

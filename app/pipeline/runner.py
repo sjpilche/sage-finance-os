@@ -127,12 +127,16 @@ def run_pipeline(
                 },
             }
 
+        # Phase: KPI Materialization
+        kpi_result = _materialize_kpis(conn, tenant_id, ctx.run_id)
+
         # Complete
         elapsed = round(time.monotonic() - start, 1)
         summary = {
             "extracted": extract_counts,
             "written": write_counts,
             "quality": quality_result,
+            "kpis": kpi_result,
             "elapsed_seconds": elapsed,
             "objects": target_objects,
             "mode": mode,
@@ -162,6 +166,33 @@ def run_pipeline(
             "error": str(e),
             "elapsed_seconds": elapsed,
         }
+
+
+def _materialize_kpis(conn, tenant_id: str, run_id: str) -> dict:
+    """Compute and materialize KPIs after a successful pipeline run."""
+    try:
+        from app.semantic.kpi_engine import compute_all_kpis
+
+        now = datetime.now(timezone.utc)
+        fiscal_year = now.year
+        fiscal_period = now.month
+
+        results = compute_all_kpis(
+            conn=conn,
+            tenant_id=tenant_id,
+            fiscal_year=fiscal_year,
+            fiscal_period=fiscal_period,
+            run_id=run_id,
+        )
+
+        computed = sum(1 for v in results.values() if v is not None)
+        log.info("pipeline: materialized %d/%d KPIs", computed, len(results))
+
+        return {"computed": computed, "total": len(results), "fiscal_year": fiscal_year, "fiscal_period": fiscal_period}
+
+    except Exception as e:
+        log.warning("pipeline: KPI materialization failed — %s", e)
+        return {"error": str(e)}
 
 
 def _get_watermark(conn, tenant_id: str, connection_id: str | None, object_name: str) -> str | None:

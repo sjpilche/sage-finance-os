@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useApi } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { DataTable, type Column } from "@/components/ui/DataTable";
@@ -8,6 +9,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { usePagination } from "@/lib/hooks/usePagination";
+import { ExportButton } from "@/components/ui/ExportButton";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { PaginatedData } from "@/lib/types/api";
 import type { GLEntry } from "@/lib/types/data";
@@ -22,11 +24,12 @@ const columns: Column<GLEntry>[] = [
   { key: "dimension_1", header: "Dept", render: (row) => row.dimension_1 || "--" },
 ];
 
-export default function GLPage() {
+function GLPageContent() {
+  const searchParams = useSearchParams();
   const { offset, limit, nextPage, prevPage, reset } = usePagination(100);
-  const [account, setAccount] = useState("");
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [account, setAccount] = useState(searchParams.get("account") || "");
+  const [dateFrom, setDateFrom] = useState(searchParams.get("date_from") || "");
+  const [dateTo, setDateTo] = useState(searchParams.get("date_to") || "");
 
   const filters = [
     account && `account=${account}`,
@@ -42,7 +45,16 @@ export default function GLPage() {
 
   return (
     <div>
-      <PageHeader title="General Ledger" subtitle={result ? `${result.total.toLocaleString()} entries` : undefined} />
+      <PageHeader
+        title="General Ledger"
+        subtitle={result ? `${result.total.toLocaleString()} entries` : undefined}
+        actions={
+          <ExportButton
+            endpoint={`/v1/data/gl?limit=5000${filters ? `&${filters}` : ""}`}
+            filename="gl-export"
+          />
+        }
+      />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-4">
@@ -77,5 +89,13 @@ export default function GLPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function GLPage() {
+  return (
+    <Suspense>
+      <GLPageContent />
+    </Suspense>
   );
 }

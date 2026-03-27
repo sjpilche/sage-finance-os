@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useApi } from "@/lib/api/client";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { KpiCard } from "@/components/ui/KpiCard";
@@ -41,6 +42,7 @@ const customerColumns: Column<ARAgingByCustomer>[] = [
 ];
 
 export default function AgingPage() {
+  const router = useRouter();
   const { data: arData, error: arError, isLoading: arLoading } = useApi<AgingResult>("/v1/analysis/aging/ar");
   const { data: apData, error: apError, isLoading: apLoading } = useApi<AgingResult>("/v1/analysis/aging/ap");
   const { data: custData } = useApi<ARAgingByCustomer[]>("/v1/analysis/aging/ar/by-customer?limit=20");
@@ -86,6 +88,7 @@ export default function AgingPage() {
               data={customers}
               keyField="customer_code"
               emptyMessage="No customer aging data available"
+              onRowClick={(row) => router.push(`/data/ar?customer=${encodeURIComponent(row.customer_name)}`)}
             />
           </div>
         </div>
